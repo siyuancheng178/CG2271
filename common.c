@@ -1,9 +1,12 @@
 #include "MKL25Z4.h"                    // Device header
 
 
-static void delay(volatile uint32_t nof) {
-	while(nof != 0) {
-		__asm("NOP");
-		nof--;
+void delay(uint32_t nof) {
+	uint32_t i = 0;
+	while (1) {
+		if (i >= nof) {
+			break;
+		}
+		i++;
 	}
 }

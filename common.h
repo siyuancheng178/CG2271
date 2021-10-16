@@ -2,6 +2,6 @@
 #define common
 #include "MKL25Z4.h"                    // Device header
 
-static void delay(volatile uint32_t nof);
+void delay(volatile uint32_t nof);
 
 #endif
