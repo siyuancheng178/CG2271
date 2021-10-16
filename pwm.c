@@ -1,4 +1,4 @@
-#include "MKL25Z4.h"                    // Device header
+#include "common.h"
 #define PTB0_Pin 0 //Timer 1 Channel 0
 #define PTB1_Pin 1 //Timer 1 Channel 1
 #define PTB2_Pin 2 //Timer 2 Channel 0
@@ -128,12 +128,7 @@ void initChannel(int timer, int channel) {
 
 
 
-static void delay(volatile uint32_t nof) {
-	while(nof != 0) {
-		__asm("NOP");
-		nof--;
-	}
-}
+
 
 
 /*duty cycle is ranged between 0 and 7500. 7500 is 100% duty-cycle, and 0 means no PWM output.
