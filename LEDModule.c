@@ -15,7 +15,7 @@ void flashGreen(PORT_Type* port, int pin[], int number) {
 		setPin(port, pin[i], 0);
 	}
 }
-
+/*
 int main() {
 	SIM -> SCGC5 |= SIM_SCGC5_PORTB_MASK;
 	SIM -> SCGC5 |= SIM_SCGC5_PORTE_MASK;
@@ -27,3 +27,4 @@ int main() {
 		flashGreen(PORTE, pin, 10);
 	}
 }
+*/
