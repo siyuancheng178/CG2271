@@ -3,9 +3,8 @@
 #define UART_RX_PORTE23 23
 #define BAUD_RATE 9600
 
-volatile int receive_data;
 
-void initUART2(uint32_t baud_rate) {
+void initUART2() {
 	uint32_t divisor, bus_clock;
 	
 	SIM -> SCGC4 |= SIM_SCGC4_UART2_MASK;
@@ -16,7 +15,7 @@ void initUART2(uint32_t baud_rate) {
 	UART2 -> C2 &= ~((UART_C2_TE_MASK) | (UART_C2_RE_MASK));
 	
 	bus_clock = (DEFAULT_SYSTEM_CLOCK) / 2;
-	divisor = bus_clock / (16 * baud_rate);
+	divisor = bus_clock / (16 * BAUD_RATE);
 	
 	UART2 -> BDH = (divisor >> 8);
 	UART2 -> BDL = divisor;
@@ -33,6 +32,7 @@ void initUART2(uint32_t baud_rate) {
 	UART2 -> C2 |= UART_C2_RIE_MASK;
 }
 
+/*
 void UART2_IRQHandler() {
 	NVIC_ClearPendingIRQ(UART1_IRQn);
 	
@@ -41,8 +41,8 @@ void UART2_IRQHandler() {
 	}
 	
 }
-
-
+*/
+/*
 int main() {
 	uint8_t rx_data = 0x69;
 	SystemCoreClockUpdate();
@@ -51,5 +51,5 @@ int main() {
 	while (1) {
 	}
 }
-
+*/
 
