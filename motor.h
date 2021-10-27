@@ -7,6 +7,9 @@ void moving_right();
 void stop();
 void change_duty_cycle(int new_duty_cycle);
 void initMotor();
-
+void moving_right_backward();
+void moving_left_backward();
+void moving_right_forward();
+void moving_left_forward();
 
 #endif

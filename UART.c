@@ -25,7 +25,7 @@ void initUART2() {
 	UART2 -> C3 = 0;
 	
 	UART2 -> C2 |= UART_C2_RE_MASK;
-	NVIC_SetPriority(UART2_IRQn, 128);
+	NVIC_SetPriority(UART2_IRQn, 0);
 	NVIC_ClearPendingIRQ(UART2_IRQn);
 	NVIC_EnableIRQ(UART2_IRQn);
 	
