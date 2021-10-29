@@ -1,159 +1,139 @@
-// Load Wi-Fi library
 #include <WiFi.h>
+#include <WiFiClient.h>
+#include <WiFiServer.h>
+#include <WiFiUdp.h>
 
-#define RXD2 16
-#define TXD2 17
 
 // Replace with your network credentials
-const char* ssid = "Mycrib";
-const char* password = "csl011025";
+const char* ssid     = "ESP32-Access-Point";
+const char* password = "123456789";
 
 // Set web server port number to 80
 WiFiServer server(80);
 
 // Variable to store the HTTP request
-String response, ip_address;
+String header;
 
 // Auxiliar variables to store the current output state
 String output26State = "off";
+String output27State = "off";
 
 // Assign output variables to GPIO pins
 const int output26 = 26;
-
-// Current time
-unsigned long currentTime = millis();
-// Previous time
-unsigned long previousTime = 0; 
-// Define timeout time in milliseconds (example: 2000ms = 2s)
-const long timeoutTime = 2000;
-int wait30 = 30000; // time to reconnect when connection is lost.
-
-// This is your Static IP
-IPAddress local_IP(192, 168, 31, 10); 
-// Gateway IP address
-IPAddress gateway(192, 168, 31, 1);
-IPAddress subnet(255, 255, 0, 0);
-IPAddress primaryDNS(8, 8, 8, 8);
-IPAddress secondaryDNS(8, 8, 4, 4); 
+const int output27 = 27;
 
 void setup() {
   Serial.begin(115200);
-  Serial2.begin(9600, SERIAL_8N1, RXD2, TXD2);
   // Initialize the output variables as outputs
   pinMode(output26, OUTPUT);
+  pinMode(output27, OUTPUT);
   // Set outputs to LOW
   digitalWrite(output26, LOW);
-
-  //Configure Static IP
-  if(!WiFi.config(local_IP, gateway, subnet, primaryDNS, secondaryDNS))
-  {
-    Serial.println("Static IP failed to configure");
-  }
+  digitalWrite(output27, LOW);
 
   // Connect to Wi-Fi network with SSID and password
-  Serial.print("Connecting to ");
-  Serial.println(ssid);
-  WiFi.begin(ssid, password);
-  while (WiFi.status() != WL_CONNECTED) {
-    delay(500);
-    Serial.print(".");
-  }
-  // Print local IP address and start web server
-  Serial.println("");
-  Serial.println("WiFi connected.");
-  Serial.println("IP address: ");
-  ip_address = WiFi.localIP().toString();
-  Serial.println(ip_address);
+  Serial.print("Setting AP (Access Point)…");
+  // Remove the password parameter, if you want the AP (Access Point) to be open
+  WiFi.softAP(ssid, password);
+
+  IPAddress IP = WiFi.softAPIP();
+  Serial.print("AP IP address: ");
+  Serial.println(IP);
+  
   server.begin();
 }
 
-void loop() {
+void loop(){
+  WiFiClient client = server.available();   // Listen for incoming clients
 
-// If disconnected, try to reconnect every 30 seconds.
-  if ((WiFi.status() != WL_CONNECTED) && (millis() > wait30)) {
-    Serial.println("Trying to reconnect WiFi...");
-    WiFi.disconnect();
-    WiFi.begin(ssid, password);
-    wait30 = millis() + 30000;
-  } 
-  // Check if a client has connected..
-  WiFiClient client = server.available();
-  if (!client) {
-    return;
+  if (client) {                             // If a new client connects,
+    Serial.println("New Client.");          // print a message out in the serial port
+    String currentLine = "";                // make a String to hold incoming data from the client
+    while (client.connected()) {            // loop while the client's connected
+      if (client.available()) {             // if there's bytes to read from the client,
+        char c = client.read();             // read a byte, then
+        Serial.write(c);                    // print it out the serial monitor
+        header += c;
+        if (c == '\n') {                    // if the byte is a newline character
+          // if the current line is blank, you got two newline characters in a row.
+          // that's the end of the client HTTP request, so send a response:
+          if (currentLine.length() == 0) {
+            // HTTP headers always start with a response code (e.g. HTTP/1.1 200 OK)
+            // and a content-type so the client knows what's coming, then a blank line:
+            client.println("HTTP/1.1 200 OK");
+            client.println("Content-type:text/html");
+            client.println("Connection: close");
+            client.println();
+            
+            // turns the GPIOs on and off
+            if (header.indexOf("GET /26/on") >= 0) {
+              Serial.println("GPIO 26 on");
+              output26State = "on";
+              digitalWrite(output26, HIGH);
+            } else if (header.indexOf("GET /26/off") >= 0) {
+              Serial.println("GPIO 26 off");
+              output26State = "off";
+              digitalWrite(output26, LOW);
+            } else if (header.indexOf("GET /27/on") >= 0) {
+              Serial.println("GPIO 27 on");
+              output27State = "on";
+              digitalWrite(output27, HIGH);
+            } else if (header.indexOf("GET /27/off") >= 0) {
+              Serial.println("GPIO 27 off");
+              output27State = "off";
+              digitalWrite(output27, LOW);
+            }
+            
+            // Display the HTML web page
+            client.println("<!DOCTYPE html><html>");
+            client.println("<head><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">");
+            client.println("<link rel=\"icon\" href=\"data:,\">");
+            // CSS to style the on/off buttons 
+            // Feel free to change the background-color and font-size attributes to fit your preferences
+            client.println("<style>html { font-family: Helvetica; display: inline-block; margin: 0px auto; text-align: center;}");
+            client.println(".button { background-color: #4CAF50; border: none; color: white; padding: 16px 40px;");
+            client.println("text-decoration: none; font-size: 30px; margin: 2px; cursor: pointer;}");
+            client.println(".button2 {background-color: #555555;}</style></head>");
+            
+            // Web Page Heading
+            client.println("<body><h1>ESP32 Web Server</h1>");
+            
+            // Display current state, and ON/OFF buttons for GPIO 26  
+            client.println("<p>GPIO 26 - State " + output26State + "</p>");
+            // If the output26State is off, it displays the ON button       
+            if (output26State=="off") {
+              client.println("<p><a href=\"/26/on\"><button class=\"button\">ON</button></a></p>");
+            } else {
+              client.println("<p><a href=\"/26/off\"><button class=\"button button2\">OFF</button></a></p>");
+            } 
+               
+            // Display current state, and ON/OFF buttons for GPIO 27  
+            client.println("<p>GPIO 27 - State " + output27State + "</p>");
+            // If the output27State is off, it displays the ON button       
+            if (output27State=="off") {
+              client.println("<p><a href=\"/27/on\"><button class=\"button\">ON</button></a></p>");
+            } else {
+              client.println("<p><a href=\"/27/off\"><button class=\"button button2\">OFF</button></a></p>");
+            }
+            client.println("</body></html>");
+            
+            // The HTTP response ends with another blank line
+            client.println();
+            // Break out of the while loop
+            break;
+          } else { // if you got a newline, then clear currentLine
+            currentLine = "";
+          }
+        } else if (c != '\r') {  // if you got anything else but a carriage return character,
+          currentLine += c;      // add it to the end of the currentLine
+        }
+      }
+    }
+    // Clear the header variable
+    header = "";
+    // Close the connection
+    client.stop();
+    Serial.println("Client disconnected.");
+    Serial.println("");
   }
-   
-  Serial.print("New client: ");
-  Serial.println(client.remoteIP());
-   
-  // Espera hasta que el cliente envíe datos.
-  // while(!client.available()){ delay(1); }
-
-  /////////////////////////////////////////////////////
-  // Read the information sent by the client.
-  String req = client.readStringUntil('\r');
-  Serial.println(req);
-
-  Serial2.write(0x35);
-
-  // Make the client's request.
-  if(req.indexOf("status") != -1)
-  {
-    response = "WiFi Connected: " + ip_address;
-  }
-  if(req.indexOf("onRed") != -1)
-  {
-    digitalWrite(output26, HIGH);
-    response = "RED LED ON";
-    Serial2.write(0x31);
-  }
-  if(req.indexOf("offRed") != -1)
-  {
-    digitalWrite(output26, LOW);
-    response = "RED LED OFF";
-    Serial2.write(0x30);
-  }  
-  if(req.indexOf("onGreen") != -1)
-  {
-    digitalWrite(output26, HIGH);
-    response = "GREEN LED ON";
-    Serial2.write(0x33);
-  }
-  if(req.indexOf("offGreen") != -1)
-  {
-    digitalWrite(output26, LOW);
-    response = "GREEN LED OFF";
-    Serial2.write(0x32);
-  }
-  if(req.indexOf("onBlue") != -1)
-  {
-    digitalWrite(output26, HIGH);
-    response = "BLUE LED ON";
-    Serial2.write(0x35);
-  }
-  if(req.indexOf("offBlue") != -1)
-  {
-    digitalWrite(output26, LOW);
-    response = "BLUE LED OFF";
-    Serial2.write(0x34);
-  }
-  /*
-       if (req.indexOf("on12") != -1) {digitalWrite(LED12, HIGH); estado = "LED12 ON";}
-       if (req.indexOf("off12") != -1){digitalWrite(LED12, LOW); estado = "LED12 OFF";}
-       if (req.indexOf("on14") != -1) {digitalWrite(LED14, HIGH); estado = "LED14 ON";}
-       if (req.indexOf("off14") != -1){digitalWrite(LED14, LOW); estado = "LED14 OFF";}
-       if (req.indexOf("consulta") != -1){
-           estado ="";
-           if (digitalRead(LED12) == HIGH) {estado = "LED12 ON,";} else {estado = "LED12 OFF,";}
-           if (digitalRead(LED14) == HIGH) {estado = estado + "LED14 ON";} else {estado = estado + "LED14 OFF";}
-           }*/
-           
-
-  client.println("HTTP/1.1 200 OK");
-  client.println("Content-Type: text/html");
-  client.println(""); 
-  client.println(response); //  Return status.
-
-  client.flush();
-  client.stop();
-  Serial.println("Client disconnected.");
 }

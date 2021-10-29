@@ -1,4 +1,5 @@
 #include "MKL25z4.h"
+#include "PWM.h"
 #define PTB0_Pin 0
 #define PTB1_Pin 1
 #define MUSICAL_NOTE_CNT 7

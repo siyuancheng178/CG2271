@@ -8,10 +8,9 @@
 
 volatile int receive_data;
 osSemaphoreId_t brainSem;
-osMessageQueueId_t motorMsg, audioMsg;
-
-void connection_success() {
-}
+int pinE[8] = {0, 1, 2, 3, 4, 5, 20, 21};
+int pinC[8] = {0, 3, 4, 5, 6, 7, 10, 11};
+osMessageQueueId_t motorMsg, audioMsg, LEDMsg;
 
 void UART2_IRQHandler() {
 	NVIC_ClearPendingIRQ(UART2_IRQn);
@@ -27,12 +26,31 @@ void brain_thread(void* argument) {
 		osSemaphoreAcquire(brainSem, osWaitForever);
 		int data = receive_data;
 		switch(data) {
-			case 0x00: case 0x01: case 0x02: case 0x03: case 0x04: case 0x05:
+			case 0x00: 
+				osMessageQueuePut(LEDMsg, &data, NULL, 0);
+			case 0x01: case 0x02: case 0x03: case 0x04: case 0x05:
 		  case 0x06: case 0x07: case 0x08:
 				osMessageQueuePut(motorMsg, &data, NULL, 0);
+			 // osMessageQueuePut(LEDMsg, 1, NULL, 0);
+			break;
 		}
 	}
 }
+/*
+void led_thread() {
+	int data;
+	for (;;) {
+		osMessageQueueGet(motorMsg, &data, NULL, osWaitForever);
+		offLED();
+		if (data == 1) {
+			lightUpAll(PORTE, pinE, 8);
+			flash(PORTC, pinC, 8, 500);
+		} else if (data == 0) {
+			lightUpAll(PORTC, pinC, 8);
+			flash(PORTE, pinE, 8, 500);
+			
+			void lightUpALl(PORT_Type* port, int pin[], int number);
+	*/	
 	
 void motor_thread() {
 	int data;
@@ -58,18 +76,32 @@ void motor_thread() {
 			case 0b00000100: //turn right
 				moving_right();
 			  break;
+			
+			case 0b00000101: //left-forward
+				moving_left_forward();
+			  break;
+			
+			case 0b00000110: //left-backward
+				moving_left_backward();
+			  break;
+			
+			case 0b00000111: //right-forward
+				moving_right_forward();
+			  break;
+			
+			case 0b00001000: //right-backward
+				moving_right_backward();
+			  break;
 		}
 	}
 }
 
 
 
-int pinE[10] = {0, 1, 2, 3, 4, 5, 20, 21, 22, 29};
-int pinC[10] = {0, 3, 4, 5, 6, 7, 10, 11, 12, 13};
 //PORTB0,1,2,3 are used for motors
 //PORTE23 is used for UART receiving data
-//PORTE0,1,2,3,4,5,20,21,22,29 are used for LED (front)
-//PORTC0,3,4,5,6,7,10,11,12,13 are used for LED (back)
+//PORTE0,1,2,3,4,5,20,21 are used for LED (front)
+//PORTC0,3,4,5,6,7,10,11 are used for LED (back)
 int main() {
 	SystemCoreClockUpdate();
 	
@@ -79,18 +111,21 @@ int main() {
 	
 	initMotor();
 	initUART2();
-	initLED(PORTE, pinE, 10);
-	initLED(PORTC, pinC, 10);
-	offLED(PORTE, pinE, 10);
-	offLED(PORTC, pinC, 10);
+	initLED(PORTE, pinE, 8);
+	initLED(PORTC, pinC, 8);
+	offLED(PORTE, pinE, 8);
+	offLED(PORTC, pinC, 8);
+	lightUpALl(PORTE, pinE, 8);
+	lightUpALl(PORTC, pinC, 8);
 	stop();
 	
 	
 	osKernelInitialize();
-	while (receive_data != 0xff);
-	connection_success();
+	//while (receive_data != 0xff);
+	//connection_success();
 	brainSem = osSemaphoreNew(1, 0, NULL);
 	motorMsg = osMessageQueueNew(1, 1, NULL);
+	LEDMsg = osMessageQueueNew(1, 1, NULL);
 	osThreadNew(motor_thread, NULL, NULL);
 	osThreadNew(brain_thread, NULL, NULL);
 	osKernelStart();
