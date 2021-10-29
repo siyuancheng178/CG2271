@@ -6,7 +6,7 @@
 #include "LEDModule.h"
 #include "cmsis_os2.h"                  // ::CMSIS:RTOS2
 
-volatile int receive_data;
+volatile int receive_data = 0;
 osSemaphoreId_t brainSem;
 int pinE[8] = {0, 1, 2, 3, 4, 5, 20, 21};
 int pinC[8] = {0, 3, 4, 5, 6, 7, 10, 11};
@@ -25,32 +25,35 @@ void brain_thread(void* argument) {
 	for (;;) {
 		osSemaphoreAcquire(brainSem, osWaitForever);
 		int data = receive_data;
+		int led_signal = (receive_data == 0)? 0 : 1;
 		switch(data) {
 			case 0x00: 
 				osMessageQueuePut(LEDMsg, &data, NULL, 0);
+			  osMessageQueuePut(LEDMsg, &led_signal, NULL, 0);
 			case 0x01: case 0x02: case 0x03: case 0x04: case 0x05:
 		  case 0x06: case 0x07: case 0x08:
 				osMessageQueuePut(motorMsg, &data, NULL, 0);
-			 // osMessageQueuePut(LEDMsg, 1, NULL, 0);
+			  osMessageQueuePut(LEDMsg, &led_signal, NULL, 0);
 			break;
 		}
 	}
 }
-/*
+
 void led_thread() {
 	int data;
 	for (;;) {
 		osMessageQueueGet(motorMsg, &data, NULL, osWaitForever);
-		offLED();
+		offLED(PORTC, pinC, 8);
+		offLED(PORTE, pinE, 8);
 		if (data == 1) {
-			lightUpAll(PORTE, pinE, 8);
+			lightUpALL(PORTE, pinE, 8);
 			flash(PORTC, pinC, 8, 500);
 		} else if (data == 0) {
-			lightUpAll(PORTC, pinC, 8);
+			lightUpALL(PORTC, pinC, 8);
 			flash(PORTE, pinE, 8, 500);
-			
-			void lightUpALl(PORT_Type* port, int pin[], int number);
-	*/	
+		}
+	}
+}	
 	
 void motor_thread() {
 	int data;
@@ -115,19 +118,21 @@ int main() {
 	initLED(PORTC, pinC, 8);
 	offLED(PORTE, pinE, 8);
 	offLED(PORTC, pinC, 8);
-	lightUpALl(PORTE, pinE, 8);
-	lightUpALl(PORTC, pinC, 8);
+	lightUpALL(PORTE, pinE, 8);
+	lightUpALL(PORTC, pinC, 8);
 	stop();
 	
+//	while (receive_data != 0xff);
 	
 	osKernelInitialize();
-	//while (receive_data != 0xff);
 	//connection_success();
+	stop();
 	brainSem = osSemaphoreNew(1, 0, NULL);
 	motorMsg = osMessageQueueNew(1, 1, NULL);
 	LEDMsg = osMessageQueueNew(1, 1, NULL);
 	osThreadNew(motor_thread, NULL, NULL);
 	osThreadNew(brain_thread, NULL, NULL);
+	osThreadNew(led_thread, NULL, NULL);
 	osKernelStart();
 	for (;;){}
 }

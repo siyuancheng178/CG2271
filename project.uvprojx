@@ -437,6 +437,11 @@
               <FileType>5</FileType>
               <FilePath>.\motor.h</FilePath>
             </File>
+            <File>
+              <FileName>LEDModule.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\LEDModule.h</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

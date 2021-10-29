@@ -47,14 +47,27 @@ void loop(){
       if (client.available()) {   
         String req = client.readStringUntil('\r');
         if(req.indexOf("stop") != -1) Serial2.write(0x00);
-        if(req.indexOf("forward") != -1) Serial2.write(0x01);
-        if(req.indexOf("back") != -1)  Serial2.write(0x02);
-        if(req.indexOf("left") != -1) Serial2.write(0x03);
-        if(req.indexOf("right") != -1) Serial2.write(0x04);
-        if(req.indexOf("leftForward") != -1) Serial2.write(0x05);
-        if(req.indexOf("leftBackward") != -1) Serial2.write(0x06);
-        if(req.indexOf("rightForward") != -1) Serial2.write(0x07);
-        if(req.indexOf("rightBackward") != -1) Serial2.write(0x08);
+        else if(req.indexOf("forward") != -1) Serial2.write(0x01);
+        else if(req.indexOf("back") != -1)  Serial2.write(0x02);
+        else if(req.indexOf("Forward") != -1 && req.indexOf("left") != -1) {
+          Serial.println("leftForward");
+          Serial2.write(0x05);
+        }
+        else if(req.indexOf("Backward") != -1 && req.indexOf("left") != -1) {
+          Serial.println("leftBackward");
+          Serial2.write(0x06);
+        }
+        else if(req.indexOf("Forward") != -1 && req.indexOf("right") != -1) {
+          Serial.println("rightForward");
+          Serial2.write(0x07);
+        }
+        else if(req.indexOf("Backward") != -1 && req.indexOf("right") != -1) {
+          Serial.println("rightBackward");
+          Serial2.write(0x08);
+        }
+        else if(req.indexOf("left") != -1) Serial2.write(0x03);
+        else if(req.indexOf("right") != -1) Serial2.write(0x04);
+        
 
         client.println("HTTP/1.1 200 OK");
         client.println("Content-Type: text/html");
