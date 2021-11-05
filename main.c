@@ -1,11 +1,30 @@
 #include "motor.h"
 #include "GPIO.h"
+#include "audio.h"
 #include "common.h"
 #include "PWM.h"
 #include "UART.h"
 #include "cmsis_os2.h"                  // ::CMSIS:RTOS2
+#include "MKL25z4.h"
+#include "PWM.h"
+#define PTD2_Pin 2
+#define MUSICAL_NOTE_CNT 42
+#define END_NOTE_CNT 14
 
-volatile int receive_data = 0, moving = 0, autoDriving;
+#define FREQ_2_MOD(x) (375000 / x)
+
+#define c 261
+#define d 294
+#define e 329
+#define f 349
+#define g 392
+#define a 440
+#define b 493
+
+int musical_notes[] = {c, c, g, g, a, a, g, f, f, e, e, d, d, c, g, g, f, f, e, e, d, g, g, f, f, e, e, d, c, c, g, g, a, a, g, f, f, e, e, d, d, c};
+int musical_end[] = {c, d, e, c, c, d, e, c, e, f, g, e, f, g};
+
+volatile int receive_data = 0, moving = 0, autoDriving, end = 1;
 osSemaphoreId_t brainSem;
 volatile int ultrasonicRising = 1;
 volatile uint32_t ultrasonicReading = 0;    //Stores the distance of object away from robot
@@ -130,10 +149,34 @@ void auto_drive_thread() {
 	for(;;) {}
 }
 
+void audio_thread(void* Argument) {
+	int i = 0;
+	for(;;) {
+		if (end == 0) {
+			TPM0->MOD = FREQ_2_MOD(musical_notes[i]);
+			TPM0_C2V = FREQ_2_MOD(musical_notes[i]/2);
+			osDelay(500);
+			TPM0->MOD = FREQ_2_MOD(0);
+			TPM0_C2V = FREQ_2_MOD(0);
+			osDelay(100);
+			i = (i + 1) % MUSICAL_NOTE_CNT;
+		} else {
+			TPM0->MOD = FREQ_2_MOD(musical_end[i]);
+			TPM0_C2V = FREQ_2_MOD(musical_end[i]/2);
+			osDelay(500);
+			TPM0->MOD = FREQ_2_MOD(0);
+			TPM0_C2V = FREQ_2_MOD(0);
+			osDelay(100);
+			i = (i + 1) % END_NOTE_CNT;
+		}
+
+	}
+}
+
 
 
 	
-void motor_thread() {
+void motor_thread(void* Argument) {
 	int data;
 	for (;;) {
 		osMessageQueueGet(motorMsg, &data, NULL, osWaitForever);
@@ -217,6 +260,7 @@ int main() {
 	
 	initMotor();
 	initUART2();
+	iniAudio();
 	initLED(PORTE, pinE, 8);
 	initLED(PORTC, pinC, 8);
 	offLED(PORTE, pinE, 8);
@@ -225,7 +269,7 @@ int main() {
 	lightUpALL(PORTC, pinC, 8);
 	stop();
 	
-  //while (receive_data != 0xff);
+  while (receive_data != 0xff);
 	//connection_success();
 	osKernelInitialize();
 	
@@ -238,6 +282,7 @@ int main() {
 	osThreadNew(brain_thread, NULL, NULL);
 	osThreadNew(flash_back, NULL, NULL);
 	osThreadNew(auto_drive_thread, NULL, NULL);
+	osThreadNew(audio_thread, NULL, NULL);
 	osKernelStart();
 	for (;;){}
 }

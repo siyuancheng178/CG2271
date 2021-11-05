@@ -14,10 +14,10 @@
 #define a 440
 #define b 493
 
-int musical_notes[] = {c, c, g, g, a, a, g, f, f, e, e, d, d, c, g, g, f, f, e, e, d, g, g, f, f, e, e, d, c, c, g, g, a, a, g, f, f, e, e, d, d, c};
-int musical_end[] = {c, d, e, c, c, d, e, c, e, f, g, e, f, g};
+//int musical_notes[] = {c, c, g, g, a, a, g, f, f, e, e, d, d, c, g, g, f, f, e, e, d, g, g, f, f, e, e, d, c, c, g, g, a, a, g, f, f, e, e, d, d, c};
+//int musical_end[] = {c, d, e, c, c, d, e, c, e, f, g, e, f, g};
 
-void iniPWM(void)
+void iniAudio(void)
 {
 	SIM_SCGC5 |= SIM_SCGC5_PORTD_MASK;
 	
@@ -47,7 +47,7 @@ void iniPWM(void)
 	
 }
 
-
+/*
 static void delay (volatile uint32_t nof)
 {
 	while(nof!=0)
@@ -89,6 +89,7 @@ int main(void)
 		delay(0xFFFFF);
 	}
 }
+*/
 
 
 

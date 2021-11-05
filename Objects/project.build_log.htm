@@ -22,7 +22,7 @@ Dialog DLL:      TARMCM1.DLL V1.14.1.0
  
 <h2>Project:</h2>
 C:\Users\Chen Silin\Desktop\sem 3\CG2271\CG2271-project\project.uvprojx
-Project File Date:  11/04/2021
+Project File Date:  11/05/2021
 
 <h2>Output:</h2>
 *** Using Compiler 'V5.06 update 6 (build 750)', folder: 'D:\MDK-ARM\ARM\ARMCC\Bin'
@@ -48,16 +48,26 @@ motor.h(12): warning:  #1295-D: Deprecated declaration moving_right_forward - gi
   void moving_right_forward();
 motor.h(13): warning:  #1295-D: Deprecated declaration moving_left_forward - give arg types
   void moving_left_forward();
+audio.h(4): warning:  #1-D: last line of file ends without a newline
+  #endif
 PWM.h(8): warning:  #1295-D: Deprecated declaration set_clock_source - give arg types
   void set_clock_source();
 UART.h(3): warning:  #1295-D: Deprecated declaration initUART2 - give arg types
   void initUART2();
-main.c(192): warning:  #167-D: argument of type "void (*)()" is incompatible with parameter of type "osThreadFunc_t"
-  	osThreadNew(motor_thread, NULL, NULL);
-main.c: 13 warnings, 0 errors
+main.c(159): warning:  #39-D: division by zero
+  			TPM0->MOD = FREQ_2_MOD(0);
+main.c(160): warning:  #39-D: division by zero
+  			TPM0_C2V = FREQ_2_MOD(0);
+main.c(167): warning:  #39-D: division by zero
+  			TPM0->MOD = FREQ_2_MOD(0);
+main.c(168): warning:  #39-D: division by zero
+  			TPM0_C2V = FREQ_2_MOD(0);
+main.c(284): warning:  #167-D: argument of type "void (*)()" is incompatible with parameter of type "osThreadFunc_t"
+  	osThreadNew(auto_drive_thread, NULL, NULL);
+main.c: 18 warnings, 0 errors
 linking...
-Program Size: Code=10964 RO-data=500 RW-data=5220 ZI-data=356  
-".\Objects\project.axf" - 0 Error(s), 13 Warning(s).
+Program Size: Code=13016 RO-data=500 RW-data=5468 ZI-data=356  
+".\Objects\project.axf" - 0 Error(s), 18 Warning(s).
 
 <h2>Software Packages used:</h2>
 
