@@ -1,7 +1,7 @@
 #include "GPIO.h"
 #include "cmsis_os2.h"                  // ::CMSIS:RTOS2
 
-void lightUpALl(PORT_Type* port, int pin[], int number) {
+void lightUpALL(PORT_Type* port, int pin[], int number) {
 	for (int i = 0; i < number; i++) {
 		setPin(port, pin[i], 1);
 	}

@@ -198,7 +198,7 @@ void initPWM(PORT_Type* port, int pin, int alt, int timer, int channel) {
 	set_clock_source();
 	initTimer(timer);
 	initChannel(timer, channel);
-	set_duty_cycle(7500, timer, channel);
+	set_duty_cycle(0, timer, channel);
 }
 
 /*	SIM -> SCGC5 |= SIM_SCGC5_PORTB_MASK;
