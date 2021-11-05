@@ -63,8 +63,8 @@ void moving_left_forward() {
 void moving_right_forward() {
 	set_duty_cycle(duty_cycle, 1, 0);
 	set_duty_cycle(0, 1, 1);
-	set_duty_cycle(0, 2, 1);
-	set_duty_cycle(moving_while_turning, 2, 0);
+	set_duty_cycle(moving_while_turning, 2, 1);
+	set_duty_cycle(0, 2, 0);
 }
 
 void moving_left_backward() {

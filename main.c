@@ -107,6 +107,7 @@ void motor_thread() {
 //PORTC0,3,4,5,6,7,10,11 are used for LED (back)
 int main() {
 	SystemCoreClockUpdate();
+
 	
 	SIM -> SCGC5 |= SIM_SCGC5_PORTB_MASK;
 	SIM -> SCGC5 |= SIM_SCGC5_PORTC_MASK;

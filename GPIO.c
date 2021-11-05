@@ -25,7 +25,7 @@ GPIO_Type* getGPIO(PORT_Type* port) {
 //high: for output pin, 1 -> HIGH 0 -> LOW
 void initGPIO(PORT_Type* port, int pin, uint8_t direction) {
 	port -> PCR[pin] &= ~PORT_PCR_MUX_MASK;
-	port -> PCR[pin] |= PORT_PCR_MUX(1);
+	port -> PCR[pin] |= PORT_PCR_MUX(1); 
 	
 	getGPIO(port) -> PDDR |= MASK(pin);
 }
