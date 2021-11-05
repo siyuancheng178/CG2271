@@ -33,20 +33,20 @@ void setup() {
 
 void loop(){
   WiFiClient client = server.available();   // Listen for incoming clients
+  
+  
 
-  if (client) {                             // If a new client connects,
-    Serial.println("New Client.");          // print a message out in the serial port
-    Serial2.write(0xff);
-  }
-  
-  
   while (true) { 
     WiFiClient client = server.available();
       
       
-      if (client.available()) {   
+    if (client.available()) {   
         String req = client.readStringUntil('\r');
         if(req.indexOf("stop") != -1) Serial2.write(0x00);
+        else if (req.indexOf("connect") != -1) {
+          Serial.write("connect");
+          Serial2.write(0xff);
+        }
         else if(req.indexOf("forward") != -1) Serial2.write(0x01);
         else if(req.indexOf("back") != -1)  Serial2.write(0x02);
         else if(req.indexOf("Forward") != -1 && req.indexOf("left") != -1) {

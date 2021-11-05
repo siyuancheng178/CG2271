@@ -22,7 +22,7 @@ Dialog DLL:      TARMCM1.DLL V1.14.1.0
  
 <h2>Project:</h2>
 C:\Users\Chen Silin\Desktop\sem 3\CG2271\CG2271-project\project.uvprojx
-Project File Date:  10/29/2021
+Project File Date:  11/04/2021
 
 <h2>Output:</h2>
 *** Using Compiler 'V5.06 update 6 (build 750)', folder: 'D:\MDK-ARM\ARM\ARMCC\Bin'
@@ -52,16 +52,12 @@ PWM.h(8): warning:  #1295-D: Deprecated declaration set_clock_source - give arg 
   void set_clock_source();
 UART.h(3): warning:  #1295-D: Deprecated declaration initUART2 - give arg types
   void initUART2();
-LEDModule.h(5): warning:  #1295-D: Deprecated declaration connection_success - give arg types
-  void connection_success();
-main.c(133): warning:  #167-D: argument of type "void (*)()" is incompatible with parameter of type "osThreadFunc_t"
+main.c(192): warning:  #167-D: argument of type "void (*)()" is incompatible with parameter of type "osThreadFunc_t"
   	osThreadNew(motor_thread, NULL, NULL);
-main.c(135): warning:  #167-D: argument of type "void (*)()" is incompatible with parameter of type "osThreadFunc_t"
-  	osThreadNew(led_thread, NULL, NULL);
-main.c: 15 warnings, 0 errors
+main.c: 13 warnings, 0 errors
 linking...
-Program Size: Code=10952 RO-data=500 RW-data=5216 ZI-data=360  
-".\Objects\project.axf" - 0 Error(s), 15 Warning(s).
+Program Size: Code=10964 RO-data=500 RW-data=5220 ZI-data=356  
+".\Objects\project.axf" - 0 Error(s), 13 Warning(s).
 
 <h2>Software Packages used:</h2>
 
@@ -96,25 +92,25 @@ Package Vendor: Keil
    * Component: ARM::CMSIS:CORE:5.3.0
 
    * Component: ARM::CMSIS:RTOS2:Keil RTX5:Library:5.5.1
-      Include file:  CMSIS\RTOS2\RTX\Include\rtx_os.h
-      Include file:  CMSIS\RTOS2\RTX\Config\RTX_Config.h
-      Source file:   CMSIS\RTOS2\RTX\Config\RTX_Config.c
-      Source file:   CMSIS\RTOS2\RTX\Template\Events.c
-      Source file:   CMSIS\RTOS2\RTX\Template\MemPool.c
-      Source file:   CMSIS\RTOS2\RTX\Template\main.c
-      Source file:   CMSIS\RTOS2\RTX\Template\MsgQueue.c
       Source file:   CMSIS\RTOS2\RTX\Template\Thread.c
-      Source file:   CMSIS\RTOS2\RTX\Template\Mutex.c
-      Source file:   CMSIS\RTOS2\RTX\Template\svc_user.c
+      Source file:   CMSIS\RTOS2\RTX\Config\RTX_Config.c
       Source file:   CMSIS\RTOS2\RTX\Template\Semaphore.c
       Source file:   CMSIS\RTOS2\RTX\Template\Timer.c
-      Source file:   CMSIS\RTOS2\RTX\Source\rtx_lib.c
       Library file:  CMSIS\RTOS2\RTX\Library\ARM\RTX_CM0.lib
+      Source file:   CMSIS\RTOS2\RTX\Template\main.c
+      Include file:  CMSIS\RTOS2\RTX\Config\RTX_Config.h
+      Include file:  CMSIS\RTOS2\RTX\Include\rtx_os.h
+      Source file:   CMSIS\RTOS2\RTX\Source\rtx_lib.c
+      Source file:   CMSIS\RTOS2\RTX\Template\svc_user.c
+      Source file:   CMSIS\RTOS2\RTX\Template\MemPool.c
+      Source file:   CMSIS\RTOS2\RTX\Template\Mutex.c
+      Source file:   CMSIS\RTOS2\RTX\Template\Events.c
+      Source file:   CMSIS\RTOS2\RTX\Template\MsgQueue.c
 
    * Component: Keil::Device:Startup:2.5.0
+      Source file:   Device\Source\ARM\startup_MKL25Z4.s
       Source file:   Device\Source\system_MKL25Z4.c
       Include file:  Device\Source\system_MKL25Z4.h
-      Source file:   Device\Source\ARM\startup_MKL25Z4.s
 Build Time Elapsed:  00:00:01
 </pre>
 </body>
