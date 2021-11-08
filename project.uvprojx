@@ -462,6 +462,11 @@
               <FileType>5</FileType>
               <FilePath>.\ultra.h</FilePath>
             </File>
+            <File>
+              <FileName>ShareVariable.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\ShareVariable.h</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

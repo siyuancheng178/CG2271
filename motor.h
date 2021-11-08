@@ -11,5 +11,5 @@ void moving_right_backward();
 void moving_left_backward();
 void moving_right_forward();
 void moving_left_forward();
-
+void motor_thread(void* Argument);
 #endif

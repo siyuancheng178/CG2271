@@ -1,5 +1,5 @@
 #ifndef ultra
 #define ultra
-void initTPM0();
+void initTPM2();
 void tUltrasonic();
 #endif

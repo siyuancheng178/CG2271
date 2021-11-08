@@ -1,8 +1,11 @@
 #include "common.h"
 #define PTB0_Pin 0 //Timer 1 Channel 0
 #define PTB1_Pin 1 //Timer 1 Channel 1
-#define PTB2_Pin 2 //Timer 2 Channel 0
-#define PTB3_Pin 3 //Timer 2 Channel 1
+#define PTD0_PIN 0 //Timer 0 Channel 0
+#define PTD1_PIN 1 //Timer 0 Channel 1
+
+//#define PTB2_Pin 2 //Timer 2 Channel 0
+//#define PTB3_Pin 3 //Timer 2 Channel 1
 
 
 void initPort(PORT_Type* port, uint8_t pin, uint8_t alt) {
@@ -33,7 +36,7 @@ void initTimer(int timer) {
 	switch (timer) {
 		case 0:
 			TPM0 -> SC &= ~(TPM_SC_CMOD_MASK | TPM_SC_PS_MASK);
-		  TPM0 -> SC |= (TPM_SC_CMOD(1) | TPM_SC_PS(4));
+		  TPM0 -> SC |= (TPM_SC_CMOD(1) | TPM_SC_PS(7));
 	    TPM0 -> SC &= ~(TPM_SC_CPWMS_MASK);
 		  TPM0 -> MOD = 7500;
 		break;

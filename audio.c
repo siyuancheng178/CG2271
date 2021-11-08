@@ -1,5 +1,6 @@
 #include "MKL25z4.h"
 #include "PWM.h"
+#include "ShareVariable.h"
 
 #define PTD2_Pin 2
 #define MUSICAL_NOTE_CNT 42
@@ -15,8 +16,8 @@
 #define a 440
 #define b 493
 
-//int musical_notes[] = {c, c, g, g, a, a, g, f, f, e, e, d, d, c, g, g, f, f, e, e, d, g, g, f, f, e, e, d, c, c, g, g, a, a, g, f, f, e, e, d, d, c};
-//int musical_end[] = {c, d, e, c, c, d, e, c, e, f, g, e, f, g};
+int musical_notes[] = {c, c, g, g, a, a, g, f, f, e, e, d, d, c, g, g, f, f, e, e, d, g, g, f, f, e, e, d, c, c, g, g, a, a, g, f, f, e, e, d, d, c};
+int musical_end[] = {c, d, e, c, c, d, e, c, e, f, g, e, f, g};
 
 void iniAudio(void)
 {
@@ -50,51 +51,29 @@ void iniAudio(void)
 	
 }
 
-/*
-static void delay (volatile uint32_t nof)
-{
-	while(nof!=0)
-	{
-		__asm("NOP");
-		nof--;
-	}
-}
 
-int main(void)
-{
-	char i=0;
-	SystemCoreClockUpdate();
-	iniPWM();
-	TPM0_C2V = 0x0EA6;
-	
-	while(1)
-	{
-		for(i=0; i<MUSICAL_NOTE_CNT; i++)
-		{
-			TPM0->MOD = FREQ_2_MOD(musical_notes[i]);
-			TPM0_C2V = FREQ_2_MOD(musical_notes[i]/2);
-			delay(0xFFFFF);
+void audio_thread(void* Argument) {
+	int i = 0;
+	for(;;) {
+		if (end == 0) {
+			TPM0->MOD = FREQ_2_MOD(musical_notes[i]*8);
+			TPM0_C2V = FREQ_2_MOD(musical_notes[i]*4);
+			osDelay(500);
 			TPM0->MOD = FREQ_2_MOD(0);
 			TPM0_C2V = FREQ_2_MOD(0);
-			delay(0x3FFFF);
-		}
-		delay(0xFFFFF);
-		
-		for(i=0; i<END_NOTE_CNT; i++)
-		{
+			osDelay(100);
+			i = (i + 1) % MUSICAL_NOTE_CNT;
+		} else {
 			TPM0->MOD = FREQ_2_MOD(musical_end[i]);
 			TPM0_C2V = FREQ_2_MOD(musical_end[i]/2);
-			delay(0xFFFFF);
+			osDelay(500);
 			TPM0->MOD = FREQ_2_MOD(0);
 			TPM0_C2V = FREQ_2_MOD(0);
-			delay(0x3FFFF);
+			osDelay(100);
+			i = (i + 1) % END_NOTE_CNT;
 		}
-		delay(0xFFFFF);
 	}
 }
-*/
-
-
 
 
 
