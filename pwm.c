@@ -33,7 +33,7 @@ void initTimer(int timer) {
 	switch (timer) {
 		case 0:
 			TPM0 -> SC &= ~(TPM_SC_CMOD_MASK | TPM_SC_PS_MASK);
-		  TPM0 -> SC |= (TPM_SC_CMOD(1) | TPM_SC_PS(7));
+		  TPM0 -> SC |= (TPM_SC_CMOD(1) | TPM_SC_PS(4));
 	    TPM0 -> SC &= ~(TPM_SC_CPWMS_MASK);
 		  TPM0 -> MOD = 7500;
 		break;

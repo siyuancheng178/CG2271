@@ -1,12 +1,14 @@
 #include "motor.h"
 #include "GPIO.h"
 #include "audio.h"
+#include "ultra.h"
 #include "common.h"
 #include "PWM.h"
 #include "UART.h"
 #include "cmsis_os2.h"                  // ::CMSIS:RTOS2
 #include "MKL25z4.h"
 #include "PWM.h"
+#include "LEDModule.h"
 #define PTD2_Pin 2
 #define MUSICAL_NOTE_CNT 42
 #define END_NOTE_CNT 14
@@ -24,30 +26,16 @@
 int musical_notes[] = {c, c, g, g, a, a, g, f, f, e, e, d, d, c, g, g, f, f, e, e, d, g, g, f, f, e, e, d, c, c, g, g, a, a, g, f, f, e, e, d, d, c};
 int musical_end[] = {c, d, e, c, c, d, e, c, e, f, g, e, f, g};
 
-volatile int receive_data = 0, moving = 0, autoDriving, end = 1;
-osSemaphoreId_t brainSem;
+volatile int receive_data = 0, moving = 0, end = 1;
+volatile int average = 10;
+osSemaphoreId_t brainSem, autoSem, autoStopSem;
 volatile int ultrasonicRising = 1;
-volatile uint32_t ultrasonicReading = 0;    //Stores the distance of object away from robot
+volatile int ultrasonicReading = 0;    //Stores the distance of object away from robot
 int pinE[8] = {0, 1, 2, 3, 4, 5, 20, 21};
 int pinC[8] = {0, 3, 4, 5, 6, 7, 10, 11};
-osMessageQueueId_t motorMsg, audioMsg, LEDMsg;
+osMessageQueueId_t motorMsg, audioMsg, LEDMsg, ultraMsg;
 osEventFlagsId_t autoStop, drivingMode;
 
-void lightUpALL(PORT_Type* port, int pin[], int number) {
-	for (int i = 0; i < number; i++) {
-		setPin(port, pin[i], 1);
-	}
-}
-
-void offLED(PORT_Type* port, int pin[], int number) {
-	for (int i = 0; i < number; i++) {
-		setPin(port, pin[i], 0);
-	}
-}
-
-void onLED(PORT_Type* port, int pin) {
-	setPin(port, pin, 1);
-}
 
 void flash_front(void* argument) {
 	int i = 0;
@@ -85,68 +73,42 @@ void flash_back(void* argument) {
 }
 
 
-void initLED(PORT_Type* port, int pin[], int number) {
-	for (int i = 0; i < 10; i++) {
-		initGPIO(port, pin[i], 1);
-	}
-}
-
-
-
 void UART2_IRQHandler() {
 	NVIC_ClearPendingIRQ(UART2_IRQn);
 	
 	if (UART2 -> S1 & UART_S1_RDRF_MASK) {
 		receive_data = UART2 -> D;
-		osSemaphoreRelease(brainSem);
+		if (receive_data == 0xf0) osSemaphoreRelease(autoSem);
+		else osSemaphoreRelease(brainSem);
 	}
 }
 
 void brain_thread(void* argument) {
 	for (;;) {
-		osSemaphoreAcquire(brainSem, osWaitForever);
-		int data = receive_data;
-		int led_signal = (receive_data == 0)? 0 : 1;
-		switch(data) {
-			case 0xf0:
-				osEventFlagsSet(drivingMode, 0x001);
-		    break;
-			case 0x00: 
-			  moving = 0;
-			case 0x01: case 0x02: case 0x03: case 0x04: case 0x05:
-		  case 0x06: case 0x07: case 0x08:
-				osMessageQueuePut(motorMsg, &data, NULL, 0);
-			  moving = 1;
-			break;
+			osSemaphoreAcquire(brainSem, osWaitForever);
+			int data = receive_data;
+		  int led_signal = (receive_data == 0)? 0 : 1;
+		  switch(data) {
+				case 0x00: 
+					moving = 0;
+			  case 0x01: case 0x02: case 0x03: case 0x04: case 0x05:
+		    case 0x06: case 0x07: case 0x08:
+				  osMessageQueuePut(motorMsg, &data, NULL, 0);
+			    moving = 1;
+			  break;
+			}
 		}
-	}
 }
 
 void auto_drive_thread() {
-	moving = 0;
-	osEventFlagsWait(drivingMode, 0x001, osFlagsWaitAll, osWaitForever);
+	osSemaphoreAcquire(autoSem, osWaitForever);
 	moving_forward();
-	moving = 1;
-	osEventFlagsWait(autoStop, 0x0001, osFlagsWaitAll, osWaitForever);
+  moving = 1;
+	osSemaphoreAcquire(autoStopSem, osWaitForever);
 	stop();
-	moving_left();
-	osDelay(100);
-	stop();
-	moving_forward();
-	osDelay(100);
-	stop();
-	moving_right();
-	osDelay(60);
-	moving_forward();
-	osDelay(80);
-	stop();
-	moving_right();
-	osDelay(70);
-	moving_forward();
-	osEventFlagsWait(autoStop, 0x0001, osFlagsWaitAll, osWaitForever);
-	stop();
-	moving = 0;
-	for(;;) {}
+	for(;;) {
+			
+	}
 }
 
 void audio_thread(void* Argument) {
@@ -227,24 +189,51 @@ void TPM0_IRQHandler(void) {
  TPM0_STATUS |= TPM_STATUS_CH1F_MASK;
  if (ultrasonicRising) { //start of echo pin pulse
   //Set timer count to 0
-  TPM0_CNT = 0; 
+	 TPM0_CNT = 0; 
   //Reset
   ultrasonicRising = 0;
   //Timer 2 Channel 1
   //Configure Input Capture Mode. Capture on falling edge only. Stores the CNT value at the moment of the falling edge into the CnV register.
   TPM0_C1SC &= ~((TPM_CnSC_ELSB_MASK) | (TPM_CnSC_ELSA_MASK) | (TPM_CnSC_MSB_MASK) | (TPM_CnSC_MSA_MASK));
   TPM0_C1SC |= TPM_CnSC_ELSB_MASK;
- } 
- else { //end of echo pin pulse
-  ultrasonicReading = TPM0_C1V * 0.0572;  
-	if (ultrasonicReading <= 150) {
-		osEventFlagsSet(autoStop, 0x0001);
-	}
-  ultrasonicRising = 1;
-  NVIC_DisableIRQ(TPM0_IRQn);
+ } else { //end of echo pin pulse
+	 ultrasonicReading = TPM0_C1V * 0.1143;  
+	 if (ultrasonicReading < 3.5) {
+	     osSemaphoreRelease(autoStopSem);
+	 }
+	 ultrasonicRising = 1;
+	 ultrasonicReading = 0;
  }
 }
 
+
+void tUltrasonic() {
+ for (;;) {
+
+  TPM0_SC &= ~TPM_SC_CMOD_MASK; //Disable LTPM counter
+  
+  //Timer 0 Channel 0 trigger
+  //Enable Output Compare Mode on Channel 0, to generate 10 microsec high pulse when timer starts. Output compare mode. Clear output on match.
+  TPM0_C0SC &= ~((TPM_CnSC_ELSB_MASK) | (TPM_CnSC_ELSA_MASK) | (TPM_CnSC_MSB_MASK) | (TPM_CnSC_MSA_MASK)); 
+  TPM0_C0SC |= (TPM_CnSC_ELSB_MASK | TPM_CnSC_MSA_MASK);
+  
+  //Timer 0 Channel 1 echo
+  //Configure Input Capture Mode. Capture on rising edge only. Stores the CNT value at the moment of the rising edge into the CnV register.
+  TPM0_C1SC &= ~((TPM_CnSC_ELSB_MASK) | (TPM_CnSC_ELSA_MASK) | (TPM_CnSC_MSB_MASK) | (TPM_CnSC_MSA_MASK));
+  TPM0_C1SC |= TPM_CnSC_ELSA_MASK;
+  
+  //Reset timer count value
+  TPM0_CNT = 0;
+	ultrasonicRising = 1;
+	ultrasonicReading = 0;
+  
+  NVIC_EnableIRQ(TPM0_IRQn);
+  NVIC_ClearPendingIRQ(TPM0_IRQn);
+
+  TPM0_SC |= TPM_SC_CMOD(1);
+	osDelay(100);
+ }
+}
 //PORTB0,1,2,3 are used for motors
 //PORTE23 is used for UART receiving data
 //PORTE0,1,2,3,4,5,20,21 are used for LED (front)
@@ -261,6 +250,7 @@ int main() {
 	initMotor();
 	initUART2();
 	iniAudio();
+	initTPM0();
 	initLED(PORTE, pinE, 8);
 	initLED(PORTC, pinC, 8);
 	offLED(PORTE, pinE, 8);
@@ -269,18 +259,21 @@ int main() {
 	lightUpALL(PORTC, pinC, 8);
 	stop();
 	
-  while (receive_data != 0xff);
+  //while (receive_data != 0xff);
 	//connection_success();
 	osKernelInitialize();
 	
 	stop();
 	brainSem = osSemaphoreNew(1, 0, NULL);
+	autoSem = osSemaphoreNew(1, 0, NULL);
+	autoStopSem = osSemaphoreNew(1, 0, NULL);
 	motorMsg = osMessageQueueNew(1, 1, NULL);
-	LEDMsg = osMessageQueueNew(1, 1, NULL);
+	ultraMsg = osMessageQueueNew(1, 1, NULL);
 	osThreadNew(motor_thread, NULL, NULL);
-	osThreadNew(flash_front, NULL, NULL);
 	osThreadNew(brain_thread, NULL, NULL);
+	osThreadNew(flash_front, NULL, NULL);
 	osThreadNew(flash_back, NULL, NULL);
+	osThreadNew( tUltrasonic, NULL, NULL);
 	osThreadNew(auto_drive_thread, NULL, NULL);
 	osThreadNew(audio_thread, NULL, NULL);
 	osKernelStart();

@@ -1,5 +1,6 @@
 #include "MKL25z4.h"
 #include "PWM.h"
+
 #define PTD2_Pin 2
 #define MUSICAL_NOTE_CNT 42
 #define END_NOTE_CNT 14
@@ -19,7 +20,9 @@
 
 void iniAudio(void)
 {
-	SIM_SCGC5 |= SIM_SCGC5_PORTD_MASK;
+	initPWM(PORTD, 2, 4, 0, 2);
+	/*SIM_SCGC5 |= SIM_SCGC5_PORTD_MASK;
+	
 	
 	PORTD->PCR[PTD2_Pin] &= ~PORT_PCR_MUX_MASK;
 	PORTD->PCR[PTD2_Pin] |= PORT_PCR_MUX(4);
@@ -43,7 +46,7 @@ void iniAudio(void)
 	
 	//enable pwm on tpm1 channel 0->ptb0
 	TPM0_C2SC &= ~((TPM_CnSC_ELSB_MASK) | (TPM_CnSC_ELSA_MASK) | (TPM_CnSC_MSB_MASK)| (TPM_CnSC_MSA_MASK));
-	TPM0_C2SC |= (TPM_CnSC_ELSB(1) | TPM_CnSC_MSB(1));
+	TPM0_C2SC |= (TPM_CnSC_ELSB(1) | TPM_CnSC_MSB(1));*/
 	
 }
 
