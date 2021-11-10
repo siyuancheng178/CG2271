@@ -29,7 +29,9 @@ void initTPM2() {
 }
 
 void tUltrasonic() {
+ osSemaphoreAcquire(autoSem, osWaitForever);
  for (;;) {
+
   //Check if semaphore attained
   //osSemaphoreAcquire(ultrasonicSemaphore, osWaitForever);
   TPM2_SC &= ~TPM_SC_CMOD_MASK; //Disable LTPM counter
@@ -46,8 +48,8 @@ void tUltrasonic() {
   
   ultrasonicRising = 1;
   ultrasonicReading = 0;
-  NVIC_EnableIRQ(TPM2_IRQn);
-  NVIC_ClearPendingIRQ(TPM2_IRQn);
+	NVIC_EnableIRQ(TPM2_IRQn);
+	NVIC_ClearPendingIRQ(TPM2_IRQn);
   TPM2_SC |= TPM_SC_CMOD(1);
 	osDelay(100);
 }

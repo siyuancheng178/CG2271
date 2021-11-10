@@ -4,20 +4,34 @@
 
 #define PTD2_Pin 2
 #define MUSICAL_NOTE_CNT 42
-#define END_NOTE_CNT 14
+#define END_NOTE_CNT 25
 
 #define FREQ_2_MOD(x) (375000 / x)
 
+#define lc 130
+#define ld 146
+#define le 164
+#define lf 174
+#define lg 196
+#define la 220
+#define lb 246
 #define c 261
-#define d 294
+#define d 293
 #define e 329
 #define f 349
 #define g 392
 #define a 440
 #define b 493
+#define hc 523
+#define hd 587
+#define he 659
+#define hf 698
+#define hg 784
+#define ha 880
+#define hb 987
 
 int musical_notes[] = {c, c, g, g, a, a, g, f, f, e, e, d, d, c, g, g, f, f, e, e, d, g, g, f, f, e, e, d, c, c, g, g, a, a, g, f, f, e, e, d, d, c};
-int musical_end[] = {c, d, e, c, c, d, e, c, e, f, g, e, f, g};
+int musical_end[] = {g, g, a, g, hc, b, g, g, a, g, hd, hc, g, g, hg, he, hc, b, a, hf, hf, he, hc, d, c};
 
 void iniAudio(void)
 {
@@ -56,8 +70,8 @@ void audio_thread(void* Argument) {
 	int i = 0;
 	for(;;) {
 		if (end == 0) {
-			TPM0->MOD = FREQ_2_MOD(musical_notes[i]*8);
-			TPM0_C2V = FREQ_2_MOD(musical_notes[i]*4);
+			TPM0->MOD = FREQ_2_MOD(musical_notes[i]);
+			TPM0_C2V = FREQ_2_MOD(musical_notes[i])/2; 
 			osDelay(500);
 			TPM0->MOD = FREQ_2_MOD(0);
 			TPM0_C2V = FREQ_2_MOD(0);
@@ -65,7 +79,7 @@ void audio_thread(void* Argument) {
 			i = (i + 1) % MUSICAL_NOTE_CNT;
 		} else {
 			TPM0->MOD = FREQ_2_MOD(musical_end[i]);
-			TPM0_C2V = FREQ_2_MOD(musical_end[i]/2);
+			TPM0_C2V = FREQ_2_MOD(musical_end[i])/2;
 			osDelay(500);
 			TPM0->MOD = FREQ_2_MOD(0);
 			TPM0_C2V = FREQ_2_MOD(0);

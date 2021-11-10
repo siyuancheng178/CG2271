@@ -15,7 +15,7 @@
 
 #define FREQ_2_MOD(x) (375000 / x)
 
-volatile int receive_data = 0, moving = 0, end = 1;
+volatile int receive_data = 0, moving = 0, end = 1, autoDriving = 0;
 osSemaphoreId_t brainSem, autoSem, autoStopSem;
 volatile int ultrasonicRising = 1;
 volatile int ultrasonicReading = 0;    //Stores the distance of object away from robot
@@ -29,7 +29,10 @@ void UART2_IRQHandler() {
 	
 	if (UART2 -> S1 & UART_S1_RDRF_MASK) {
 		receive_data = UART2 -> D;
-		if (receive_data == 0xf0) osSemaphoreRelease(autoSem);
+		if (receive_data == 0xf0) {
+			osSemaphoreRelease(autoSem);
+			osSemaphoreRelease(autoSem);
+		}
 		else osSemaphoreRelease(brainSem);
 	}
 }
@@ -52,13 +55,57 @@ void brain_thread(void* argument) {
 }
 
 void auto_drive_thread() {
-	osSemaphoreAcquire(autoSem, osWaitForever);
-	moving_forward();
-  moving = 1;
-	osSemaphoreAcquire(autoStopSem, osWaitForever);
-	stop();
 	for(;;) {
-			
+		osSemaphoreAcquire(autoSem, osWaitForever);
+		moving_forward();
+		moving = 1;
+		osSemaphoreAcquire(autoStopSem, osWaitForever);
+		moving_backward();
+		osDelay(200);
+		stop();
+		osDelay(1000);
+		
+		moving_left();
+		osDelay(300);
+		moving_forward_auto();
+		osDelay(200);
+		stop();
+		osDelay(1000);
+		
+		moving_right();
+		osDelay(400);
+		moving_forward_auto();
+		osDelay(400);
+		stop();
+		osDelay(1000);
+		
+		moving_right();
+		osDelay(400);
+		moving_forward_auto();
+		osDelay(400);
+		stop();
+		osDelay(1000);
+		
+		moving_right();
+		osDelay(400);
+		moving_forward_auto();
+		osDelay(400);
+		stop();
+		osDelay(1000);
+		
+		moving_right();
+		osDelay(400);
+		moving_forward_auto();
+		osDelay(400);
+		stop();
+		osDelay(1000);
+		
+		moving_left();
+		osDelay(300);
+		stop();
+		osDelay(1000);
+
+		stop();
 	}
 }
 
@@ -109,7 +156,7 @@ int main() {
 	
 	stop();
 	brainSem = osSemaphoreNew(1, 0, NULL);
-	autoSem = osSemaphoreNew(1, 0, NULL);
+	autoSem = osSemaphoreNew(2, 0, NULL);
 	autoStopSem = osSemaphoreNew(1, 0, NULL);
 	motorMsg = osMessageQueueNew(1, 1, NULL);
 	ultraMsg = osMessageQueueNew(1, 1, NULL);

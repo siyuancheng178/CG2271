@@ -1,8 +1,8 @@
 #ifndef SHARE
 #define SHARE
 #include "cmsis_os2.h"                  // ::CMSIS:RTOS2
-extern volatile int receive_data, moving, end;
-extern osSemaphoreId_t brainSem, autoSem, autoStopSem;
+extern volatile int receive_data, moving, end, autoDriving;
+extern osSemaphoreId_t brainSem, autoSem;
 extern volatile int ultrasonicRising;
 extern volatile int ultrasonicReading;    //Stores the distance of object away from robot
 extern int* pinE;

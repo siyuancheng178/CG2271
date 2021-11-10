@@ -26,27 +26,67 @@ Project File Date:  11/09/2021
 
 <h2>Output:</h2>
 *** Using Compiler 'V5.06 update 6 (build 750)', folder: 'D:\MDK-ARM\ARM\ARMCC\Bin'
-Build target 'Target 1'
+Rebuild target 'Target 1'
+compiling RTX_Config.c...
+compiling GPIO.c...
+compiling rtx_lib.c...
+compiling pwm.c...
+compiling common.c...
+compiling UART.c...
+compiling audio.c...
+PWM.h(8): warning:  #1295-D: Deprecated declaration set_clock_source - give arg types
+  void set_clock_source();
+ShareVariable.h(13): warning:  #1-D: last line of file ends without a newline
+  #endif
+audio.c(76): warning:  #39-D: division by zero
+  			TPM0->MOD = FREQ_2_MOD(0);
+audio.c(77): warning:  #39-D: division by zero
+  			TPM0_C2V = FREQ_2_MOD(0);
+audio.c(84): warning:  #39-D: division by zero
+  			TPM0->MOD = FREQ_2_MOD(0);
+audio.c(85): warning:  #39-D: division by zero
+  			TPM0_C2V = FREQ_2_MOD(0);
+audio.c: 6 warnings, 0 errors
+compiling ultrasonic.c...
+ShareVariable.h(13): warning:  #1-D: last line of file ends without a newline
+  #endif
+ultrasonic.c(61): warning:  #1-D: last line of file ends without a newline
+  	
+ultrasonic.c: 2 warnings, 0 errors
+compiling motor.c...
+pwm.h(8): warning:  #1295-D: Deprecated declaration set_clock_source - give arg types
+  void set_clock_source();
+ShareVariable.h(13): warning:  #1-D: last line of file ends without a newline
+  #endif
+motor.c: 2 warnings, 0 errors
+compiling LEDModule.c...
+ShareVariable.h(13): warning:  #1-D: last line of file ends without a newline
+  #endif
+LEDModule.c(63): warning:  #1-D: last line of file ends without a newline
+  }
+LEDModule.c: 2 warnings, 0 errors
 compiling main.c...
-motor.h(3): warning:  #1295-D: Deprecated declaration moving_forward - give arg types
+motor.h(3): warning:  #1295-D: Deprecated declaration moving_forward_auto - give arg types
+  void moving_forward_auto();
+motor.h(4): warning:  #1295-D: Deprecated declaration moving_forward - give arg types
   void moving_forward();
-motor.h(4): warning:  #1295-D: Deprecated declaration moving_backward - give arg types
+motor.h(5): warning:  #1295-D: Deprecated declaration moving_backward - give arg types
   void moving_backward();
-motor.h(5): warning:  #1295-D: Deprecated declaration moving_left - give arg types
+motor.h(6): warning:  #1295-D: Deprecated declaration moving_left - give arg types
   void moving_left();
-motor.h(6): warning:  #1295-D: Deprecated declaration moving_right - give arg types
+motor.h(7): warning:  #1295-D: Deprecated declaration moving_right - give arg types
   void moving_right();
-motor.h(7): warning:  #1295-D: Deprecated declaration stop - give arg types
+motor.h(8): warning:  #1295-D: Deprecated declaration stop - give arg types
   void stop();
-motor.h(9): warning:  #1295-D: Deprecated declaration initMotor - give arg types
+motor.h(10): warning:  #1295-D: Deprecated declaration initMotor - give arg types
   void initMotor();
-motor.h(10): warning:  #1295-D: Deprecated declaration moving_right_backward - give arg types
+motor.h(11): warning:  #1295-D: Deprecated declaration moving_right_backward - give arg types
   void moving_right_backward();
-motor.h(11): warning:  #1295-D: Deprecated declaration moving_left_backward - give arg types
+motor.h(12): warning:  #1295-D: Deprecated declaration moving_left_backward - give arg types
   void moving_left_backward();
-motor.h(12): warning:  #1295-D: Deprecated declaration moving_right_forward - give arg types
+motor.h(13): warning:  #1295-D: Deprecated declaration moving_right_forward - give arg types
   void moving_right_forward();
-motor.h(13): warning:  #1295-D: Deprecated declaration moving_left_forward - give arg types
+motor.h(14): warning:  #1295-D: Deprecated declaration moving_left_forward - give arg types
   void moving_left_forward();
 audio.h(14): warning:  #1-D: last line of file ends without a newline
   #endif
@@ -60,12 +100,14 @@ PWM.h(8): warning:  #1295-D: Deprecated declaration set_clock_source - give arg 
   void set_clock_source();
 UART.h(3): warning:  #1295-D: Deprecated declaration initUART2 - give arg types
   void initUART2();
-main.c(121): warning:  #167-D: argument of type "void (*)()" is incompatible with parameter of type "osThreadFunc_t"
+main.c(168): warning:  #167-D: argument of type "void (*)()" is incompatible with parameter of type "osThreadFunc_t"
   	osThreadNew(auto_drive_thread, NULL, NULL);
-main.c: 17 warnings, 0 errors
+main.c: 18 warnings, 0 errors
+assembling startup_MKL25Z4.s...
+compiling system_MKL25Z4.c...
 linking...
-Program Size: Code=12980 RO-data=500 RW-data=5476 ZI-data=356  
-".\Objects\project.axf" - 0 Error(s), 17 Warning(s).
+Program Size: Code=13600 RO-data=500 RW-data=5528 ZI-data=360  
+".\Objects\project.axf" - 0 Error(s), 30 Warning(s).
 
 <h2>Software Packages used:</h2>
 
@@ -100,26 +142,26 @@ Package Vendor: Keil
    * Component: ARM::CMSIS:CORE:5.3.0
 
    * Component: ARM::CMSIS:RTOS2:Keil RTX5:Library:5.5.1
-      Source file:   CMSIS\RTOS2\RTX\Config\RTX_Config.c
-      Source file:   CMSIS\RTOS2\RTX\Template\main.c
+      Source file:   CMSIS\RTOS2\RTX\Template\Semaphore.c
+      Source file:   CMSIS\RTOS2\RTX\Template\Thread.c
       Include file:  CMSIS\RTOS2\RTX\Config\RTX_Config.h
       Source file:   CMSIS\RTOS2\RTX\Template\Events.c
       Source file:   CMSIS\RTOS2\RTX\Template\MsgQueue.c
       Source file:   CMSIS\RTOS2\RTX\Template\Mutex.c
-      Source file:   CMSIS\RTOS2\RTX\Template\MemPool.c
-      Source file:   CMSIS\RTOS2\RTX\Template\Semaphore.c
-      Source file:   CMSIS\RTOS2\RTX\Template\Thread.c
       Include file:  CMSIS\RTOS2\RTX\Include\rtx_os.h
-      Source file:   CMSIS\RTOS2\RTX\Source\rtx_lib.c
-      Library file:  CMSIS\RTOS2\RTX\Library\ARM\RTX_CM0.lib
+      Source file:   CMSIS\RTOS2\RTX\Template\main.c
+      Source file:   CMSIS\RTOS2\RTX\Template\MemPool.c
+      Source file:   CMSIS\RTOS2\RTX\Config\RTX_Config.c
       Source file:   CMSIS\RTOS2\RTX\Template\Timer.c
+      Source file:   CMSIS\RTOS2\RTX\Source\rtx_lib.c
       Source file:   CMSIS\RTOS2\RTX\Template\svc_user.c
+      Library file:  CMSIS\RTOS2\RTX\Library\ARM\RTX_CM0.lib
 
    * Component: Keil::Device:Startup:2.5.0
       Source file:   Device\Source\system_MKL25Z4.c
       Include file:  Device\Source\system_MKL25Z4.h
       Source file:   Device\Source\ARM\startup_MKL25Z4.s
-Build Time Elapsed:  00:00:01
+Build Time Elapsed:  00:00:03
 </pre>
 </body>
 </html>

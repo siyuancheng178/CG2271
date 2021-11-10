@@ -156,6 +156,11 @@
           <ItemText>ultrasonicReading,0x0A</ItemText>
         </Ww>
       </WatchWindow1>
+      <ScvdPack>
+        <Filename>C:\Users\Chen Silin\AppData\Local\Arm\Packs\ARM\CMSIS\5.6.0\CMSIS\RTOS2\RTX\RTX5.scvd</Filename>
+        <Type>ARM.CMSIS.5.6.0</Type>
+        <SubType>1</SubType>
+      </ScvdPack>
       <Tracepoint>
         <THDelay>0</THDelay>
       </Tracepoint>

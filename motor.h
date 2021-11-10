@@ -1,5 +1,6 @@
 #ifndef MOTOR_H
 #define MOTOR_H
+void moving_forward_auto();
 void moving_forward();
 void moving_backward();
 void moving_left();

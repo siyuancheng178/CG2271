@@ -9,6 +9,7 @@
 
 
 volatile int duty_cycle = 7500;
+volatile int duty_cycle_auto = 3750;
 volatile int duty_cycle_turning = 3750;
 volatile int moving_while_turning = 500;
 
@@ -31,6 +32,14 @@ void moving_forward() {
 	set_duty_cycle(duty_cycle, 1, 0);
 	set_duty_cycle(0, 1, 1);
 	set_duty_cycle(duty_cycle, 0, 1);
+	set_duty_cycle(0, 0, 0);
+	moving = 1;
+}
+
+void moving_forward_auto() {
+	set_duty_cycle(duty_cycle_auto, 1, 0);
+	set_duty_cycle(0, 1, 1);
+	set_duty_cycle(duty_cycle_auto, 0, 1);
 	set_duty_cycle(0, 0, 0);
 	moving = 1;
 }
