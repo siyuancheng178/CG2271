@@ -51,6 +51,7 @@ void loop(){
         else if(req.indexOf("Backward") != -1 && req.indexOf("right") != -1) Serial2.write(0x08);
         else if(req.indexOf("left") != -1) Serial2.write(0x03);
         else if(req.indexOf("right") != -1) Serial2.write(0x04);
+        else if(req.indexOf("end") != -1) Serial2.write(0x11);
         
 
         client.println("HTTP/1.1 200 OK");

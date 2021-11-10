@@ -28,29 +28,33 @@ Project File Date:  11/09/2021
 *** Using Compiler 'V5.06 update 6 (build 750)', folder: 'D:\MDK-ARM\ARM\ARMCC\Bin'
 Rebuild target 'Target 1'
 compiling RTX_Config.c...
-compiling GPIO.c...
-compiling rtx_lib.c...
-compiling pwm.c...
 compiling common.c...
-compiling UART.c...
+compiling pwm.c...
 compiling audio.c...
 PWM.h(8): warning:  #1295-D: Deprecated declaration set_clock_source - give arg types
   void set_clock_source();
 ShareVariable.h(13): warning:  #1-D: last line of file ends without a newline
   #endif
-audio.c(76): warning:  #39-D: division by zero
+audio.c(71): warning:  #39-D: division by zero
   			TPM0->MOD = FREQ_2_MOD(0);
-audio.c(77): warning:  #39-D: division by zero
+audio.c(72): warning:  #39-D: division by zero
   			TPM0_C2V = FREQ_2_MOD(0);
-audio.c(84): warning:  #39-D: division by zero
+audio.c(81): warning:  #39-D: division by zero
   			TPM0->MOD = FREQ_2_MOD(0);
-audio.c(85): warning:  #39-D: division by zero
+audio.c(82): warning:  #39-D: division by zero
   			TPM0_C2V = FREQ_2_MOD(0);
 audio.c: 6 warnings, 0 errors
+compiling UART.c...
+compiling LEDModule.c...
+ShareVariable.h(13): warning:  #1-D: last line of file ends without a newline
+  #endif
+LEDModule.c(63): warning:  #1-D: last line of file ends without a newline
+  }
+LEDModule.c: 2 warnings, 0 errors
 compiling ultrasonic.c...
 ShareVariable.h(13): warning:  #1-D: last line of file ends without a newline
   #endif
-ultrasonic.c(61): warning:  #1-D: last line of file ends without a newline
+ultrasonic.c(58): warning:  #1-D: last line of file ends without a newline
   	
 ultrasonic.c: 2 warnings, 0 errors
 compiling motor.c...
@@ -59,12 +63,7 @@ pwm.h(8): warning:  #1295-D: Deprecated declaration set_clock_source - give arg 
 ShareVariable.h(13): warning:  #1-D: last line of file ends without a newline
   #endif
 motor.c: 2 warnings, 0 errors
-compiling LEDModule.c...
-ShareVariable.h(13): warning:  #1-D: last line of file ends without a newline
-  #endif
-LEDModule.c(63): warning:  #1-D: last line of file ends without a newline
-  }
-LEDModule.c: 2 warnings, 0 errors
+compiling rtx_lib.c...
 compiling main.c...
 motor.h(3): warning:  #1295-D: Deprecated declaration moving_forward_auto - give arg types
   void moving_forward_auto();
@@ -100,13 +99,14 @@ PWM.h(8): warning:  #1295-D: Deprecated declaration set_clock_source - give arg 
   void set_clock_source();
 UART.h(3): warning:  #1295-D: Deprecated declaration initUART2 - give arg types
   void initUART2();
-main.c(168): warning:  #167-D: argument of type "void (*)()" is incompatible with parameter of type "osThreadFunc_t"
+main.c(173): warning:  #167-D: argument of type "void (*)()" is incompatible with parameter of type "osThreadFunc_t"
   	osThreadNew(auto_drive_thread, NULL, NULL);
 main.c: 18 warnings, 0 errors
+compiling GPIO.c...
 assembling startup_MKL25Z4.s...
 compiling system_MKL25Z4.c...
 linking...
-Program Size: Code=13600 RO-data=500 RW-data=5528 ZI-data=360  
+Program Size: Code=13404 RO-data=500 RW-data=5528 ZI-data=360  
 ".\Objects\project.axf" - 0 Error(s), 30 Warning(s).
 
 <h2>Software Packages used:</h2>
@@ -142,26 +142,26 @@ Package Vendor: Keil
    * Component: ARM::CMSIS:CORE:5.3.0
 
    * Component: ARM::CMSIS:RTOS2:Keil RTX5:Library:5.5.1
-      Source file:   CMSIS\RTOS2\RTX\Template\Semaphore.c
-      Source file:   CMSIS\RTOS2\RTX\Template\Thread.c
       Include file:  CMSIS\RTOS2\RTX\Config\RTX_Config.h
       Source file:   CMSIS\RTOS2\RTX\Template\Events.c
-      Source file:   CMSIS\RTOS2\RTX\Template\MsgQueue.c
       Source file:   CMSIS\RTOS2\RTX\Template\Mutex.c
+      Source file:   CMSIS\RTOS2\RTX\Template\Semaphore.c
+      Source file:   CMSIS\RTOS2\RTX\Template\MsgQueue.c
+      Source file:   CMSIS\RTOS2\RTX\Template\Thread.c
       Include file:  CMSIS\RTOS2\RTX\Include\rtx_os.h
+      Source file:   CMSIS\RTOS2\RTX\Config\RTX_Config.c
       Source file:   CMSIS\RTOS2\RTX\Template\main.c
       Source file:   CMSIS\RTOS2\RTX\Template\MemPool.c
-      Source file:   CMSIS\RTOS2\RTX\Config\RTX_Config.c
       Source file:   CMSIS\RTOS2\RTX\Template\Timer.c
-      Source file:   CMSIS\RTOS2\RTX\Source\rtx_lib.c
-      Source file:   CMSIS\RTOS2\RTX\Template\svc_user.c
       Library file:  CMSIS\RTOS2\RTX\Library\ARM\RTX_CM0.lib
+      Source file:   CMSIS\RTOS2\RTX\Template\svc_user.c
+      Source file:   CMSIS\RTOS2\RTX\Source\rtx_lib.c
 
    * Component: Keil::Device:Startup:2.5.0
       Source file:   Device\Source\system_MKL25Z4.c
       Include file:  Device\Source\system_MKL25Z4.h
       Source file:   Device\Source\ARM\startup_MKL25Z4.s
-Build Time Elapsed:  00:00:03
+Build Time Elapsed:  00:00:01
 </pre>
 </body>
 </html>

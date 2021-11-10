@@ -15,7 +15,7 @@
 
 #define FREQ_2_MOD(x) (375000 / x)
 
-volatile int receive_data = 0, moving = 0, end = 1, autoDriving = 0;
+volatile int receive_data = 0, moving = 0, end = 0, autoDriving = 0;
 osSemaphoreId_t brainSem, autoSem, autoStopSem;
 volatile int ultrasonicRising = 1;
 volatile int ultrasonicReading = 0;    //Stores the distance of object away from robot
@@ -45,10 +45,14 @@ void brain_thread(void* argument) {
 		  switch(data) {
 				case 0x00: 
 					moving = 0;
+					stop();
+				  break;
 			  case 0x01: case 0x02: case 0x03: case 0x04: case 0x05:
-		    case 0x06: case 0x07: case 0x08:
+		    case 0x06: case 0x07: case 0x08: 
 				  osMessageQueuePut(motorMsg, &data, NULL, 0);
 			    moving = 1;
+				  break;
+				case 0x11: end = 1;
 			  break;
 			}
 		}
@@ -59,52 +63,50 @@ void auto_drive_thread() {
 		osSemaphoreAcquire(autoSem, osWaitForever);
 		moving_forward();
 		moving = 1;
+		osDelay(1000);
 		osSemaphoreAcquire(autoStopSem, osWaitForever);
 		moving_backward();
-		osDelay(200);
-		stop();
-		osDelay(1000);
+		osDelay(5000);
+	/*	stop();
 		
 		moving_left();
 		osDelay(300);
 		moving_forward_auto();
 		osDelay(200);
 		stop();
-		osDelay(1000);
 		
 		moving_right();
 		osDelay(400);
 		moving_forward_auto();
 		osDelay(400);
 		stop();
-		osDelay(1000);
 		
 		moving_right();
 		osDelay(400);
 		moving_forward_auto();
 		osDelay(400);
 		stop();
-		osDelay(1000);
 		
 		moving_right();
 		osDelay(400);
 		moving_forward_auto();
 		osDelay(400);
 		stop();
-		osDelay(1000);
 		
 		moving_right();
 		osDelay(400);
 		moving_forward_auto();
 		osDelay(400);
 		stop();
-		osDelay(1000);
 		
 		moving_left();
 		osDelay(300);
-		stop();
+		stop(); 
+		*/
+		moving_forward();
+		osSemaphoreRelease(autoSem);
 		osDelay(1000);
-
+		osSemaphoreAcquire(autoStopSem, osWaitForever);
 		stop();
 	}
 }
@@ -120,8 +122,10 @@ void TPM2_IRQHandler(void) {
 		TPM2_C1SC |= TPM_CnSC_ELSB_MASK;
   } else { //end of echo pin pulse
 		ultrasonicReading = TPM2_C1V * 0.1143;
-		if (ultrasonicReading <= 150 && ultrasonicReading >= 120) {
+		if (ultrasonicReading <= 150 && ultrasonicReading >= 50) {
 			osSemaphoreRelease(autoStopSem);
+		} else {
+			osSemaphoreRelease(autoSem);
 		}
 		ultrasonicRising = 1;
 		NVIC_DisableIRQ(TPM2_IRQn);
@@ -130,6 +134,7 @@ void TPM2_IRQHandler(void) {
 
 
 int main() {
+
 	SystemCoreClockUpdate();
 
   SIM -> SCGC5 |= SIM_SCGC5_PORTA_MASK;

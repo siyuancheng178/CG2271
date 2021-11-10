@@ -29,11 +29,8 @@ void initTPM2() {
 }
 
 void tUltrasonic() {
- osSemaphoreAcquire(autoSem, osWaitForever);
  for (;;) {
-
-  //Check if semaphore attained
-  //osSemaphoreAcquire(ultrasonicSemaphore, osWaitForever);
+  osSemaphoreAcquire(autoSem, osWaitForever);
   TPM2_SC &= ~TPM_SC_CMOD_MASK; //Disable LTPM counter
   
   //Timer 2 Channel 0
