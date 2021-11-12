@@ -25,12 +25,13 @@ void initTPM2() {
  
  TPM2_C0V = 30; 
  
- NVIC_SetPriority(TPM2_IRQn, 2);
+ NVIC_SetPriority(TPM2_IRQn, 0);
 }
 
 void tUltrasonic() {
+ osSemaphoreAcquire(connect_event, osWaitForever);
  for (;;) {
-  osSemaphoreAcquire(autoSem, osWaitForever);
+  //osSemaphoreAcquire(autoMeasure, osWaitForever);
   TPM2_SC &= ~TPM_SC_CMOD_MASK; //Disable LTPM counter
   
   //Timer 2 Channel 0
@@ -48,7 +49,7 @@ void tUltrasonic() {
 	NVIC_EnableIRQ(TPM2_IRQn);
 	NVIC_ClearPendingIRQ(TPM2_IRQn);
   TPM2_SC |= TPM_SC_CMOD(1);
-	osDelay(100);
+	osDelay(60);
 }
 }
 

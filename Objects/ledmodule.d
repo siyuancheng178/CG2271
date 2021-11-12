@@ -12,3 +12,5 @@
 .\objects\ledmodule.o: .\RTE\Device\MKL25Z128xxx4\system_MKL25Z4.h
 .\objects\ledmodule.o: common.h
 .\objects\ledmodule.o: C:\Users\Chen Silin\AppData\Local\Arm\Packs\Keil\Kinetis_KLxx_DFP\1.15.0\Device\Include\MKL25Z4.h
+.\objects\ledmodule.o: PWM.h
+.\objects\ledmodule.o: C:\Users\Chen Silin\AppData\Local\Arm\Packs\Keil\Kinetis_KLxx_DFP\1.15.0\Device\Include\MKL25Z4.h

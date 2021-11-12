@@ -15,12 +15,14 @@
 
 #define FREQ_2_MOD(x) (375000 / x)
 
-volatile int receive_data = 0, moving = 0, end = 0, autoDriving = 0;
-osSemaphoreId_t brainSem, autoSem, autoStopSem;
-volatile int ultrasonicRising = 1;
+volatile int receive_data = 0, moving = 0, end = 0, autoDriving = 0, ultrasonicReq = 0;
+osSemaphoreId_t brainSem, autoStartSem, autoStopSem, autoMeasure, connect_event;
+const osThreadAttr_t priorityHigh = {.priority = osPriorityHigh};
+volatile int touch = 0;
+	volatile int ultrasonicRising = 1;
 volatile int ultrasonicReading = 0;    //Stores the distance of object away from robot
-int pinE[8] = {0, 1, 2, 3, 4, 5, 20, 21};
-int pinC[8] = {0, 3, 4, 5, 6, 7, 10, 11};
+int PinE[8] = {0, 1, 2, 3, 4, 5, 20, 21};
+int PinC[8] = {0, 3, 4, 5, 6, 7, 10, 11};
 osMessageQueueId_t motorMsg, audioMsg, LEDMsg, ultraMsg;
 osEventFlagsId_t autoStop, drivingMode;
 
@@ -30,14 +32,15 @@ void UART2_IRQHandler() {
 	if (UART2 -> S1 & UART_S1_RDRF_MASK) {
 		receive_data = UART2 -> D;
 		if (receive_data == 0xf0) {
-			osSemaphoreRelease(autoSem);
-			osSemaphoreRelease(autoSem);
+			osSemaphoreRelease(autoStartSem);
+			osSemaphoreRelease(autoMeasure);
 		}
 		else osSemaphoreRelease(brainSem);
 	}
 }
 
 void brain_thread(void* argument) {
+	osSemaphoreAcquire(connect_event, osWaitForever);
 	for (;;) {
 			osSemaphoreAcquire(brainSem, osWaitForever);
 			int data = receive_data;
@@ -52,62 +55,87 @@ void brain_thread(void* argument) {
 				  osMessageQueuePut(motorMsg, &data, NULL, 0);
 			    moving = 1;
 				  break;
-				case 0x11: end = 1;
+				case 0x11: end = (end == 0)? 1 : 0;
 			  break;
 			}
 		}
 }
 
 void auto_drive_thread() {
+	osSemaphoreAcquire(connect_event, osWaitForever);
 	for(;;) {
-		osSemaphoreAcquire(autoSem, osWaitForever);
-		moving_forward();
+		osSemaphoreAcquire(autoStartSem, osWaitForever);
+		moving_forward_auto();
 		moving = 1;
-		osDelay(1000);
+		osDelay(800);
+		ultrasonicReq = 1;
 		osSemaphoreAcquire(autoStopSem, osWaitForever);
+
 		moving_backward();
-		osDelay(5000);
-	/*	stop();
+		osDelay(400);
+		stop();
+		osDelay(500);
 		
 		moving_left();
-		osDelay(300);
-		moving_forward_auto();
 		osDelay(200);
 		stop();
+		osDelay(200);
+		moving_forward_auto();
+		osDelay(480);
+		stop();
+		osDelay(500);
 		
 		moving_right();
 		osDelay(400);
-		moving_forward_auto();
-		osDelay(400);
 		stop();
+		osDelay(200);
+		moving_forward_auto();
+		osDelay(550);
+		stop();
+		osDelay(500);
 		
 		moving_right();
-		osDelay(400);
-		moving_forward_auto();
-		osDelay(400);
+		osDelay(300);
 		stop();
+		osDelay(200);
+		moving_forward_auto();
+		osDelay(450);
+		stop();
+		osDelay(500);
 		
 		moving_right();
-		osDelay(400);
-		moving_forward_auto();
-		osDelay(400);
+		osDelay(250);
 		stop();
+		osDelay(200);
+		moving_forward_auto();
+		osDelay(550);
+		stop();
+		osDelay(500);
 		
 		moving_right();
-		osDelay(400);
-		moving_forward_auto();
-		osDelay(400);
+		osDelay(300);
 		stop();
+		osDelay(200);
+		moving_forward_auto();
+		osDelay(550);
+		stop();
+		osDelay(500);
 		
 		moving_left();
-		osDelay(300);
+		osDelay(220);
 		stop(); 
-		*/
-		moving_forward();
-		osSemaphoreRelease(autoSem);
-		osDelay(1000);
+		osDelay(500);
+
+		osSemaphoreRelease(autoMeasure);
+		moving_forward_auto();
+		osDelay(800);
+		ultrasonicReq = 1;
 		osSemaphoreAcquire(autoStopSem, osWaitForever);
+		moving_backward();
+		osDelay(100);
 		stop();
+		osDelay(300);
+		end = (end == 0)? 1 : 0;
 	}
 }
 
@@ -122,10 +150,20 @@ void TPM2_IRQHandler(void) {
 		TPM2_C1SC |= TPM_CnSC_ELSB_MASK;
   } else { //end of echo pin pulse
 		ultrasonicReading = TPM2_C1V * 0.1143;
-		if (ultrasonicReading <= 150 && ultrasonicReading >= 50) {
-			osSemaphoreRelease(autoStopSem);
-		} else {
-			osSemaphoreRelease(autoSem);
+		if(ultrasonicReq) {
+			if (ultrasonicReading <= 465 && ultrasonicReading >= 70) {
+					touch++;
+					if (touch == 2) {
+						osSemaphoreRelease(autoStopSem);
+						ultrasonicReq = 0;
+						touch = 0;
+					} else {
+						osSemaphoreRelease(autoMeasure);
+					}
+			} else {
+				osSemaphoreRelease(autoMeasure);
+				if (touch > 0) touch--;
+			}
 		}
 		ultrasonicRising = 1;
 		NVIC_DisableIRQ(TPM2_IRQn);
@@ -133,9 +171,11 @@ void TPM2_IRQHandler(void) {
 }
 
 
+
+
 int main() {
 
-	SystemCoreClockUpdate();
+  SystemCoreClockUpdate();
 
   SIM -> SCGC5 |= SIM_SCGC5_PORTA_MASK;
 	SIM -> SCGC5 |= SIM_SCGC5_PORTC_MASK;
@@ -147,21 +187,25 @@ int main() {
 	initUART2();
 	iniAudio();
 	initTPM2();
-	initLED(PORTE, pinE, 8);
-	initLED(PORTC, pinC, 8);
-	offLED(PORTE, pinE, 8);
-	offLED(PORTC, pinC, 8);
-	lightUpALL(PORTE, pinE, 8);
-	lightUpALL(PORTC, pinC, 8);
+	initLED(PORTE, PinE, 8);
+	initLED(PORTC, PinC, 8);
+	//offLEDALL(PORTE, pinE, 8);
+	//offLEDALL(PORTC, pinC, 8);
+	//lightUpALL(PORTE, pinE, 8);
+	//lightUpALL(PORTC, pinC, 8);
+	offLEDALL(PORTE, PinE, 8);
+	offLEDALL(PORTC, PinC, 8);
 	stop();
 	
-  //while (receive_data != 0xff);
-	//connection_success();
+  while (receive_data != 0xff);
+	
 	osKernelInitialize();
-	
-	stop();
+	osThreadNew(audio_connect, NULL, NULL);
+	osThreadNew(connection_success, NULL, NULL);
+	connect_event = osSemaphoreNew(7, 0, NULL);
 	brainSem = osSemaphoreNew(1, 0, NULL);
-	autoSem = osSemaphoreNew(2, 0, NULL);
+	autoStartSem = osSemaphoreNew(1, 0, NULL);
+	autoMeasure = osSemaphoreNew(1, 0, NULL);
 	autoStopSem = osSemaphoreNew(1, 0, NULL);
 	motorMsg = osMessageQueueNew(1, 1, NULL);
 	ultraMsg = osMessageQueueNew(1, 1, NULL);
@@ -169,7 +213,7 @@ int main() {
 	osThreadNew(brain_thread, NULL, NULL);
 	osThreadNew(flash_front, NULL, NULL);
 	osThreadNew(flash_back, NULL, NULL);
-	osThreadNew( tUltrasonic, NULL, NULL);
+	osThreadNew( tUltrasonic, NULL, &priorityHigh);
 	osThreadNew(auto_drive_thread, NULL, NULL);
 	osThreadNew(audio_thread, NULL, NULL);
 	osKernelStart();
