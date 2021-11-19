@@ -19,7 +19,7 @@ volatile int receive_data = 0, moving = 0, end = 0, autoDriving = 0, ultrasonicR
 osSemaphoreId_t brainSem, autoStartSem, autoStopSem, autoMeasure, connect_event;
 const osThreadAttr_t priorityHigh = {.priority = osPriorityHigh};
 volatile int touch = 0;
-	volatile int ultrasonicRising = 1;
+volatile int ultrasonicRising = 1;
 volatile int ultrasonicReading = 0;    //Stores the distance of object away from robot
 int PinE[8] = {0, 1, 2, 3, 4, 5, 20, 21};
 int PinC[8] = {0, 3, 4, 5, 6, 7, 10, 11};
@@ -189,10 +189,6 @@ int main() {
 	initTPM2();
 	initLED(PORTE, PinE, 8);
 	initLED(PORTC, PinC, 8);
-	//offLEDALL(PORTE, pinE, 8);
-	//offLEDALL(PORTC, pinC, 8);
-	//lightUpALL(PORTE, pinE, 8);
-	//lightUpALL(PORTC, pinC, 8);
 	offLEDALL(PORTE, PinE, 8);
 	offLEDALL(PORTC, PinC, 8);
 	stop();
@@ -213,7 +209,7 @@ int main() {
 	osThreadNew(brain_thread, NULL, NULL);
 	osThreadNew(flash_front, NULL, NULL);
 	osThreadNew(flash_back, NULL, NULL);
-	osThreadNew( tUltrasonic, NULL, &priorityHigh);
+	osThreadNew(tUltrasonic, NULL, &priorityHigh);
 	osThreadNew(auto_drive_thread, NULL, NULL);
 	osThreadNew(audio_thread, NULL, NULL);
 	osKernelStart();

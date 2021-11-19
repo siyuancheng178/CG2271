@@ -4,10 +4,6 @@
 #define PTD0_PIN 0 //Timer 0 Channel 0
 #define PTD1_PIN 1 //Timer 0 Channel 1
 
-//#define PTB2_Pin 2 //Timer 2 Channel 0
-//#define PTB3_Pin 3 //Timer 2 Channel 1
-
-
 void initPort(PORT_Type* port, uint8_t pin, uint8_t alt) {
 	port -> PCR[pin] &= ~PORT_PCR_MUX_MASK;
 	port -> PCR[pin] |= PORT_PCR_MUX(alt);
@@ -126,14 +122,6 @@ void initChannel(int timer, int channel) {
 }
 				
 	
-
-
-
-
-
-
-
-
 /*duty cycle is ranged between 0 and 7500. 7500 is 100% duty-cycle, and 0 means no PWM output.
 Timer 0 Channel 0 - 5, Timer 1 Channel 0 - 1,
 and Timer 2 Channel 0 - 1 can be used */
@@ -203,25 +191,3 @@ void initPWM(PORT_Type* port, int pin, int alt, int timer, int channel) {
 	initChannel(timer, channel);
 	set_duty_cycle(0, timer, channel);
 }
-
-/*	SIM -> SCGC5 |= SIM_SCGC5_PORTB_MASK;
-	initPWM(PORTB, PTB0_Pin, 3, 1, 0);
-	initPWM(PORTB, PTB1_Pin, 3, 2, 0);
-	initPWM(PORTB, PTB2_Pin, 3, 2, 1);
-	initPWM(PORTB, PTB3_Pin, 3, 1, 1);
-	//forward pin0(left) -> Timer1 channel 0;  pin3(right) -> Timer1 channel 1
-  //backward: pin1(left) -> Timer2 Channel 0; pin2(right) -> Timer2 Channel 1;
-
-	while (1) {
-		set_duty_cycle(3750, 1, 0);
-		set_duty_cycle(0, 1, 1);
-		set_duty_cycle(3750, 2, 1);
-		set_duty_cycle(0, 2, 0);
-		delay(0x800000);
-		set_duty_cycle(0, 1, 0);
-		set_duty_cycle(3750, 1, 1);
-		set_duty_cycle(0, 2, 1);
-		set_duty_cycle(3750, 2, 0);
-		delay(0x800000);
-
-} */

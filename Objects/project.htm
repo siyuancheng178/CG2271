@@ -3,7 +3,7 @@
 <title>Static Call Graph - [.\Objects\project.axf]</title></head>
 <body><HR>
 <H1>Static Call Graph for image .\Objects\project.axf</H1><HR>
-<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060750: Last Updated: Fri Nov 12 09:02:48 2021
+<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060750: Last Updated: Fri Nov 19 10:15:19 2021
 <BR><P>
 <H3>Maximum Stack Usage =        120 bytes + Unknown(Functions without stacksize, Cycles, Untraceable Function Pointers)</H3><H3>
 Call chain for Maximum Stack Depth:</H3>
@@ -467,8 +467,8 @@ Global Symbols
 </UL>
 
 <P><STRONG><a name="[a2]"></a>__aeabi_uidivmod</STRONG> (Thumb, 20 bytes, Stack size 0 bytes, aeabi_sdiv.o(.text))
-<BR><BR>[Called By]<UL><LI><a href="#[a1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SystemCoreClockUpdate
-<LI><a href="#[c6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;initUART2
+<BR><BR>[Called By]<UL><LI><a href="#[c6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;initUART2
+<LI><a href="#[a1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SystemCoreClockUpdate
 </UL>
 
 <P><STRONG><a name="[fe]"></a>__aeabi_idiv</STRONG> (Thumb, 0 bytes, Stack size 8 bytes, aeabi_sdiv.o(.text), UNUSED)
@@ -1173,11 +1173,11 @@ Global Symbols
 <LI><a href="#[97]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;osMessageQueueNew
 <LI><a href="#[ca]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;osKernelStart
 <LI><a href="#[76]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;osKernelInitialize
+<LI><a href="#[c6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;initUART2
 <LI><a href="#[c4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;initTPM2
 <LI><a href="#[be]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;initMotor
 <LI><a href="#[b8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;iniAudio
 <LI><a href="#[a1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SystemCoreClockUpdate
-<LI><a href="#[c6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;initUART2
 <LI><a href="#[b5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;offLEDALL
 <LI><a href="#[bd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;initLED
 </UL>
@@ -1376,15 +1376,15 @@ Global Symbols
 <H3>
 Local Symbols
 </H3>
+<P><STRONG><a name="[a4]"></a>__NVIC_ClearPendingIRQ</STRONG> (Thumb, 18 bytes, Stack size 0 bytes, main.o(i.__NVIC_ClearPendingIRQ))
+<BR><BR>[Called By]<UL><LI><a href="#[19]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART2_IRQHandler
+<LI><a href="#[1e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TPM2_IRQHandler
+</UL>
+
 <P><STRONG><a name="[c7]"></a>__NVIC_SetPriority</STRONG> (Thumb, 110 bytes, Stack size 8 bytes, uart.o(i.__NVIC_SetPriority))
 <BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = __NVIC_SetPriority
 </UL>
 <BR>[Called By]<UL><LI><a href="#[c6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;initUART2
-</UL>
-
-<P><STRONG><a name="[a4]"></a>__NVIC_ClearPendingIRQ</STRONG> (Thumb, 18 bytes, Stack size 0 bytes, main.o(i.__NVIC_ClearPendingIRQ))
-<BR><BR>[Called By]<UL><LI><a href="#[19]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART2_IRQHandler
-<LI><a href="#[1e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TPM2_IRQHandler
 </UL>
 
 <P><STRONG><a name="[c5]"></a>__NVIC_SetPriority</STRONG> (Thumb, 110 bytes, Stack size 8 bytes, ultrasonic.o(i.__NVIC_SetPriority))

@@ -39,33 +39,6 @@ int musical_end[] = {lg, lg, la, lg, c, lb, skip, lg, lg, la, lg, d, c, skip, lg
 void iniAudio(void)
 {
 	initPWM(PORTD, 2, 4, 0, 2);
-	/*SIM_SCGC5 |= SIM_SCGC5_PORTD_MASK;
-	
-	
-	PORTD->PCR[PTD2_Pin] &= ~PORT_PCR_MUX_MASK;
-	PORTD->PCR[PTD2_Pin] |= PORT_PCR_MUX(4);
-	
-	
-	//enable clock gating for timer1
-	SIM->SCGC6 |= SIM_SCGC6_TPM0_MASK;
-	
-	SIM->SOPT2 &= ~SIM_SOPT2_TPMSRC_MASK;
-	SIM->SOPT2 |= SIM_SOPT2_TPMSRC(1); //mcgfllclk
-	
-	// set module value 48000000 / 128 = 575000 /7500 = 50hz
-	TPM0->MOD = 7500;
-	
-	
-	//edge aligened pwm
-	//update snc register: cmod=01 ps = 111(128)
-	TPM0->SC &= ~((TPM_SC_CMOD_MASK) | (TPM_SC_PS_MASK));
-	TPM0->SC |= (TPM_SC_CMOD(1) | TPM_SC_PS(4));
-	TPM0->SC &= ~(TPM_SC_CPWMS_MASK);
-	
-	//enable pwm on tpm1 channel 0->ptb0
-	TPM0_C2SC &= ~((TPM_CnSC_ELSB_MASK) | (TPM_CnSC_ELSA_MASK) | (TPM_CnSC_MSB_MASK)| (TPM_CnSC_MSA_MASK));
-	TPM0_C2SC |= (TPM_CnSC_ELSB(1) | TPM_CnSC_MSB(1));*/
-	
 }
 
 void audio_connect(void* Argument) {
